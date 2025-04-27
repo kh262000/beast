@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تداول العملات الرقمية</title>
+    <!-- إضافة مكتبة Plotly للرسوم البيانية -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- تنسيق CSS بسيط -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .opportunity {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .chart {
+            width: 100%;
+            height: 400px;
+            margin-top: 10px;
+        }
+        .news, .events {
+            margin-top: 20px;
+        }
+        .news ul, .events ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .news li, .events li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .warning {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>لوحة تداول العملات الرقمية</h1>
+
+    <!-- عرض الفرص التداولية -->
+    <h2>الفرص التداولية</h2>
+    {% if opportunities %}
+        {% for opp in opportunities %}
+            <div class="opportunity">
+                <strong>{{ opp.symbol }}</strong><br>
+                السعر: {{ opp.price }}<br>
+                نسبة نجاح الشراء: {{ opp.buy_success }}%<br>
+                نسبة نجاح البيع: {{ opp.sell_success }}%<br>
+                {% if opp.event_warning %}
+                    <p class="warning">تحذير: {{ opp.event_warning }}</p>
+                {% endif %}
+                {% if opp.continuation_pattern %}
+                    <p>نمط الشموع: {{ opp.continuation_pattern }}</p>
+                {% endif %}
+                {% if opp.wyckoff_phase %}
+                    <p>مرحلة وايكوف: {{ opp.wyckoff_phase }}</p>
+                {% endif %}
+                {% if opp.market_structure %}
+                    <p>هيكل السوق: {{ opp.market_structure }}</p>
+                {% endif %}
+                <!-- عرض الرسم البياني -->
+                <div id="chart-{{ opp.symbol }}" class="chart"></div>
+                <script>
+                    Plotly.newPlot('chart-{{ opp.symbol }}', {{ charts[opp.symbol] | safe }});
+                </script>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>لا توجد فرص تداولية متاحة حاليًا.</p>
+    {% endif %}
+
+    <!-- عرض الأخبار -->
+    <div class="news">
+        <h2>الأخبار</h2>
+        {% if news %}
+            <ul>
+                {% for item in news %}
+                    <li>{{ item.title }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>لا توجد أخبار متاحة حاليًا.</p>
+        {% endif %}
+    </div>
+
+    <!-- عرض الأحداث الاقتصادية -->
+    <div class="events">
+        <h2>الأحداث الاقتصادية</h2>
+        {% if economic_events %}
+            <ul>
+                {% for event in economic_events %}
+                    <li>{{ event.time }} - {{ event.event }} (تأثير: {{ event.impact }})</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>لا توجد أحداث اقتصادية متاحة حاليًا.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
